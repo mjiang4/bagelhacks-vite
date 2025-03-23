@@ -61,3 +61,9 @@ body {
 .animate-fadeIn {
   animation: fadeIn 0.5s ease-out forwards;
 }
+
+/* Vertical text for mortgage comparison */
+.vertical-text {
+  writing-mode: vertical-lr;
+  transform: rotate(180deg);
+}

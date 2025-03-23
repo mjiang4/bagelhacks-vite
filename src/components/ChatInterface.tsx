@@ -92,11 +92,11 @@ export default function ChatInterface() {
           />
           <button 
             type="submit" 
-            className="ml-2 bg-[#211A3F] p-3 rounded-full disabled:opacity-50"
+            className="ml-2 bg-[#211A3F] p-3 rounded-full disabled:opacity-50 cursor-pointer"
             disabled={isLoading}
           >
             {isLoading ? (
-              <div className="w-6 h-6 border-2 border-t-transparent border-white rounded-full animate-spin cursor-pointer"></div>
+              <div className="w-6 h-6 border-2 border-t-transparent border-white rounded-full animate-spin"></div>
             ) : (
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M22 2L11 13" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
