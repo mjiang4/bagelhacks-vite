@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import ChatInterface from './ChatInterface';
 
 interface MortgageDetailsProps {
@@ -18,10 +18,20 @@ export default function MortgageDetails({
 }: MortgageDetailsProps) {
   const [showChat, setShowChat] = useState(false);
   const cardsRef = useRef<HTMLDivElement>(null);
+  const chatRef = useRef<HTMLDivElement>(null);
 
   const handleGetExplanations = () => {
     setShowChat(true);
   };
+
+  // Scroll to chat when it appears
+  useEffect(() => {
+    if (showChat && chatRef.current) {
+      setTimeout(() => {
+        chatRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 100);
+    }
+  }, [showChat]);
 
   return (
     <div className="w-full max-w-3xl mx-auto flex flex-col items-center">
@@ -77,7 +87,11 @@ export default function MortgageDetails({
       </div>
       
       {/* Chat interface that appears when "get explanations" is clicked */}
-      {showChat && <ChatInterface />}
+      {showChat && (
+        <div ref={chatRef} className="mt-8">
+          <ChatInterface />
+        </div>
+      )}
     </div>
   );
 } 

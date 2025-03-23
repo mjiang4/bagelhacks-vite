@@ -338,7 +338,7 @@ def build_context(vectordb, query, k=5):
 def extract_summary_points(vectordb):
     print("\n🚀 Extracting key mortgage details for USA and Canada...")
     extraction_query = "interest rate monthly payment cash to close USA Canada"
-    context_text, source_info = build_context(vectordb, extraction_query, k=5)
+    context_text, source_info = build_context(vectordb, extraction_query, k=1)
     prompt = generate_summary_prompt(context_text, source_info)
     response = parallel_interactive_query(prompt, extraction_query, context_text, source_info)
     try:
@@ -363,13 +363,9 @@ def save_summary_json(summary, filename="mortgage_summary.json"):
 # INTERACTIVE QUERY FUNCTIONS
 # -----------------------
 def ask_mortgage_query(query, vectordb):
-    context_text, source_info = build_context(vectordb, query, k=5)
+    query = "Can you give me a concise answer to: " + query
+    context_text, source_info = build_context(vectordb, query, k=1)
     prompt = generate_query_prompt(query, context_text, source_info)
-    return parallel_interactive_query(prompt, query, context_text, source_info)
-
-def ask_mortgage_expert(query, vectordb):
-    context_text, source_info = build_context(vectordb, query, k=5)
-    prompt = generate_expert_prompt(query, context_text, source_info)
     return parallel_interactive_query(prompt, query, context_text, source_info)
 
 # -----------------------
@@ -394,16 +390,9 @@ if __name__ == "__main__":
                 continue
             if user_query.lower() in ['/exit', '/quit']:
                 break
-            if user_query.startswith("/expert"):
-                expert_query = user_query[len("/expert"):].strip()
-                if not expert_query:
-                    print("Please provide a query after '/expert'.")
-                    continue
-                print("\n🚀 Processing your expert query...")
-                answer = ask_mortgage_expert(expert_query, vectordb)
-            else:
-                print("\n🚀 Processing your query...")
-                answer = ask_mortgage_query(user_query, vectordb)
+            
+            print("\n🚀 Processing your query...")
+            answer = ask_mortgage_query(user_query, vectordb)
             print(f"\n🎖️ Response:\n{answer}")
         except KeyboardInterrupt:
             print("\n🚪 Goodbye! 👋")
