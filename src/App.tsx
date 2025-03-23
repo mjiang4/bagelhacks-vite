@@ -1,9 +1,8 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import './App.css'
 import FileUploader from './components/FileUploader'
 import BackgroundCircles from './components/bgcircles/BackgroundCircles'
 import MortgageDetails from './components/MortgageDetails'
-import SmallBackgroundCircles from './components/bgcircles/SmallBackgroundCircles'
 
 function App() {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -23,9 +22,23 @@ function App() {
     setSelectedFile(null);
   };
 
+  // Control overflow behavior based on whether details are shown
+  useEffect(() => {
+    if (selectedFile) {
+      document.body.style.overflowY = 'auto';
+    } else {
+      document.body.style.overflowY = 'hidden';
+    }
+    
+    // Cleanup function
+    return () => {
+      document.body.style.overflowY = 'hidden';
+    };
+  }, [selectedFile]);
+
   return (
     <>
-      <div className="min-h-screen flex flex-col overflow-hidden">
+      <div className={`min-h-screen flex flex-col ${selectedFile ? 'overflow-x-hidden' : 'overflow-hidden'}`}>
         <header className="p-3 ml-8 mt-8 flex justify-start">
           <div className="logo-container">
             <h1 className="text-2xl font-bold text-white">LoanLens</h1>
@@ -46,8 +59,7 @@ function App() {
               </div>
             </>
           ) : (
-            <div className="relative w-full">
-              <SmallBackgroundCircles />
+            <div className="relative w-full pb-24">
               <MortgageDetails 
                 fileName={selectedFile.name}
                 monthlyPayment={mockMortgageData.monthlyPayment}
