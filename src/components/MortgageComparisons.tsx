@@ -70,45 +70,45 @@ export default function MortgageComparisons() {
       
       <div className="space-y-6">
         <MortgageComparison 
-          monthlyPayment="1,856"
-          interestRate="3.758"
-          cashToClose="30,367"
+          monthlyPayment="3,950.50"
+          interestRate="8.45"
+          cashToClose="13,200.00"
           isBest={true}
           label="Mortgage comp 1"
           url="#"
         />
 
         <MortgageComparison 
-          monthlyPayment="1,956.50"
-          interestRate="3.812"
-          cashToClose="31,250.75"
+          monthlyPayment="3,980.75"
+          interestRate="8.50"
+          cashToClose="13,250.50"
           isBest={false}
           label="Mortgage comp 2"
           url="#"
         />
 
         <MortgageComparison 
-          monthlyPayment="1,987.25"
-          interestRate="3.925"
-          cashToClose="32,100.60"
+          monthlyPayment="4,010.00"
+          interestRate="8.55"
+          cashToClose="13,300.00"
           isBest={false}
           label="Mortgage comp 3"
           url="#"
         />
 
         <MortgageComparison 
-          monthlyPayment="2,012.80"
-          interestRate="4.045"
-          cashToClose="33,345.90"
+          monthlyPayment="4,030.00"
+          interestRate="8.60"
+          cashToClose="13,320.75"
           isBest={false}
           label="Mortgage comp 4"
           url="#"
         />
 
         <MortgageComparison 
-          monthlyPayment="2,098.95"
-          interestRate="4.215"
-          cashToClose="34,125.50"
+          monthlyPayment="4,050.00"
+          interestRate="8.62"
+          cashToClose="13,340.25"
           isBest={false}
           label="Mortgage comp 5"
           url="#"
