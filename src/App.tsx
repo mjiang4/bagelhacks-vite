@@ -3,6 +3,7 @@ import './App.css'
 import FileUploader from './components/FileUploader'
 import BackgroundCircles from './components/bgcircles/BackgroundCircles'
 import MortgageDetails from './components/MortgageDetails'
+import { useNavigate, useLocation } from 'react-router-dom'
 
 interface MortgageAnalysis {
   interest_rate: string;
@@ -10,27 +11,49 @@ interface MortgageAnalysis {
   cash_to_close: string;
 }
 
-function App() {
+interface AppProps {
+  initialShowDetails?: boolean;
+}
+
+function App({ initialShowDetails = false }: AppProps) {
+  const navigate = useNavigate();
+  const location = useLocation();
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [mortgageData, setMortgageData] = useState<MortgageAnalysis | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [showFileUploader, setShowFileUploader] = useState(!initialShowDetails);
+  
+  // Check if we need to show details from URL params
+  useEffect(() => {
+    if (location.pathname === '/details') {
+      setShowFileUploader(false);
+    } else {
+      setShowFileUploader(true);
+    }
+  }, [location.pathname]);
   
   const handleFileSelected = (file: File) => {
     setSelectedFile(file);
     setIsLoading(true);
     setError(null);
+    setShowFileUploader(false);
   };
   
   const handleAnalysisComplete = (analysis: MortgageAnalysis) => {
     setMortgageData(analysis);
     setIsLoading(false);
+    setShowFileUploader(false);
+    // Navigate to the details page
+    navigate('/details');
   };
   
   const handleCloseDetails = () => {
     setSelectedFile(null);
     setMortgageData(null);
     setError(null);
+    setShowFileUploader(true);
+    navigate('/');
   };
 
   const handleError = (errorMessage: string) => {
@@ -62,7 +85,7 @@ function App() {
         </header>
         
         <main className="flex-1 flex flex-col items-center justify-start px-4 mt-18">
-          {!selectedFile ? (
+          {showFileUploader ? (
             <>
               <div className="text-center mb-6">
                 <h1 className="text-5xl font-medium text-white mb-2">Simplify your mortgage</h1>
@@ -91,14 +114,14 @@ function App() {
                   <p className="text-white">{error}</p>
                   <button 
                     onClick={handleCloseDetails}
-                    className="mt-4 px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                    className="mt-4 px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 cursor-pointer"
                   >
                     Try Again
                   </button>
                 </div>
               ) : mortgageData ? (
                 <MortgageDetails 
-                  fileName={selectedFile.name}
+                  fileName={selectedFile?.name || "Your Mortgage Document"}
                   monthlyPayment={mortgageData.monthly_payment}
                   interestRate={mortgageData.interest_rate}
                   cashToClose={mortgageData.cash_to_close}
@@ -109,7 +132,7 @@ function App() {
                   <p className="text-white">No mortgage data available</p>
                   <button 
                     onClick={handleCloseDetails}
-                    className="mt-4 px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                    className="mt-4 px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 cursor-pointer"
                   >
                     Try Again
                   </button>

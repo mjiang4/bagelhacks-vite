@@ -62,7 +62,18 @@ export default function FileUploader({ onFileSelected, onAnalysisComplete, onErr
       const result: UploadResponse = await response.json();
       console.log('File uploaded successfully:', result);
       
-      // Step 2: Trigger analysis after upload is complete
+      // Step 2: Run the update_db.py script to update the vector database
+      const updateDbResponse = await fetch('http://localhost:8000/update-db/', {
+        method: 'POST',
+      });
+      
+      if (!updateDbResponse.ok) {
+        console.warn('Database update may have failed, continuing with analysis');
+      } else {
+        console.log('Vector database updated successfully');
+      }
+      
+      // Step 3: Trigger analysis after upload is complete
       setIsUploading(false);
       setIsAnalyzing(true);
       
@@ -80,7 +91,7 @@ export default function FileUploader({ onFileSelected, onAnalysisComplete, onErr
       const analysisResult: MortgageAnalysis = await analysisResponse.json();
       console.log('Mortgage analysis completed:', analysisResult);
       
-      // Step 3: Pass the analysis results to the parent component
+      // Step 4: Pass the analysis results to the parent component
       onAnalysisComplete(analysisResult);
       
     } catch (err) {
@@ -89,6 +100,7 @@ export default function FileUploader({ onFileSelected, onAnalysisComplete, onErr
       if (onError) onError(errorMsg);
       console.error('Error:', err);
     } finally {
+      // Only reset local component state, not the parent state
       setIsUploading(false);
       setIsAnalyzing(false);
     }

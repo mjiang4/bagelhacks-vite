@@ -282,6 +282,22 @@ async def get_pdf(filename: str):
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to retrieve PDF: {str(e)}")
 
+@app.post("/update-db/")
+async def update_db():
+    """
+    Update the vector database with current documents in the data directory
+    """
+    try:
+        # Update the vector database
+        global vectordb
+        from mortgage_analysis import update_vector_db
+        vectordb = update_vector_db()
+        
+        return {"message": "Vector database updated successfully"}
+    except Exception as e:
+        print(f"Database update error: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Failed to update vector database: {str(e)}")
+
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True) 
