@@ -61,7 +61,7 @@ export default function FileUploader({ onFileSelected, onAnalysisComplete, onErr
 
       const result: UploadResponse = await response.json();
       console.log('File uploaded successfully:', result);
-      
+      //
       // Step 2: Run the update_db.py script to update the vector database
       const updateDbResponse = await fetch('http://localhost:8000/update-db/', {
         method: 'POST',
