@@ -62,7 +62,7 @@ export default function MortgageDetails({
       {/* File name display with X button */}
       <div className="bg-[#211A3F]/60 backdrop-blur-md rounded-full py-4 px-6 flex items-center border border-[#E4E3ED] justify-between mb-24 w-[80%]">
         <div className="text-white flex-grow text-left">{fileName}</div>
-        <button className="text-white text-xl ml-4 hover:text-gray-300 cursor-pointer" onClick={onClose}>×</button>
+        <button className="text-white text-3xl ml-4 hover:text-gray-300 cursor-pointer" onClick={onClose}>×</button>
       </div>
       
       {/* Three cards displaying mortgage details with blurs positioned outside */}

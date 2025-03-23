@@ -13,6 +13,19 @@ export default function ChatInterface() {
     await handleSubmit(predefinedQuestion);
   };
 
+  // Handle direct response for rate questions
+  const handleRateQuestion = () => {
+    const rateQuestion = 'Is my rate good?';
+    setQuestion(rateQuestion);
+    setIsLoading(true);
+    
+    setTimeout(() => {
+      setAnswer("It's hard to say without comparing. The best way to know if your rate is good is to shop around and see what other lenders are offering. Check your rates with Mortgage Minder now!");
+      setIsLoading(false);
+      setQuestion('');
+    }, 2500);
+  };
+
   // Handle form submission for the question
   const handleSubmit = async (userQuestion?: string) => {
     try {
@@ -48,21 +61,21 @@ export default function ChatInterface() {
         <div className="flex flex-wrap justify-center gap-2 mb-6">
           <button 
             className="inline-block text-left bg-[#211A3F] py-2 px-4 rounded-full text-white border border-[#E4E3ED]/40 hover:bg-[#2c2252] transition-colors cursor-pointer"
-            onClick={() => handlePredefinedQuestion('What fees are negotiable in this mortgage?')}
+            onClick={handleRateQuestion}
           >
-            Negotiable fees
+            Is my rate good?
           </button>
           <button 
             className="inline-block text-left bg-[#211A3F] py-2 px-4 rounded-full text-white border border-[#E4E3ED]/40 hover:bg-[#2c2252] transition-colors cursor-pointer"
             onClick={() => handlePredefinedQuestion('What happens if I make late payments?')}
           >
-            Late payments
+            What if I pay late?
           </button>
           <button 
             className="inline-block text-left bg-[#211A3F] py-2 px-4 rounded-full text-white border border-[#E4E3ED]/40 hover:bg-[#2c2252] transition-colors cursor-pointer"
-            onClick={() => handlePredefinedQuestion('Can I repay my mortgage early?')}
+            onClick={() => handlePredefinedQuestion('Are these fees normal?')}
           >
-            Early repayment
+            Are these fees normal?
           </button>
         </div>
         
