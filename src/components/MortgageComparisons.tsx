@@ -77,22 +77,40 @@ export default function MortgageComparisons() {
           label="Mortgage comp 1"
           url="#"
         />
-        
+
         <MortgageComparison 
-          monthlyPayment="1,856"
-          interestRate="3.758"
-          cashToClose="30,367"
+          monthlyPayment="1,956.50"
+          interestRate="3.812"
+          cashToClose="31,250.75"
           isBest={false}
           label="Mortgage comp 2"
           url="#"
         />
-        
+
         <MortgageComparison 
-          monthlyPayment="1,856"
-          interestRate="3.758"
-          cashToClose="30,367"
+          monthlyPayment="1,987.25"
+          interestRate="3.925"
+          cashToClose="32,100.60"
           isBest={false}
           label="Mortgage comp 3"
+          url="#"
+        />
+
+        <MortgageComparison 
+          monthlyPayment="2,012.80"
+          interestRate="4.045"
+          cashToClose="33,345.90"
+          isBest={false}
+          label="Mortgage comp 4"
+          url="#"
+        />
+
+        <MortgageComparison 
+          monthlyPayment="2,098.95"
+          interestRate="4.215"
+          cashToClose="34,125.50"
+          isBest={false}
+          label="Mortgage comp 5"
           url="#"
         />
       </div>

@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import ChatInterface from './ChatInterface';
 import PhonePopup from './PhonePopup';
 import MortgageComparisons from './MortgageComparisons';

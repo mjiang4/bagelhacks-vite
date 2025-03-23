@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import phoneCallIcon from '../assets/Phone call.png';
 import phoneMissingIcon from '../assets/Phone missed.png';
 
