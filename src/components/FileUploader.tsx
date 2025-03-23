@@ -7,9 +7,22 @@ interface UploadResponse {
   url: string;
 }
 
-export default function FileUploader({ onFileSelected }: { onFileSelected: (file: File) => void }) {
+interface MortgageAnalysis {
+  interest_rate: string;
+  monthly_payment: string;
+  cash_to_close: string;
+}
+
+interface FileUploaderProps {
+  onFileSelected: (file: File) => void;
+  onAnalysisComplete: (analysis: MortgageAnalysis) => void;
+  onError?: (error: string) => void;
+}
+
+export default function FileUploader({ onFileSelected, onAnalysisComplete, onError }: FileUploaderProps) {
   const [isDragging, setIsDragging] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const dropRef = useRef<HTMLDivElement>(null);
   
@@ -17,13 +30,15 @@ export default function FileUploader({ onFileSelected }: { onFileSelected: (file
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
       onFileSelected(file);
-      await uploadFile(file);
+      await uploadAndAnalyzeFile(file);
     }
   };
   
-  const uploadFile = async (file: File) => {
+  const uploadAndAnalyzeFile = async (file: File) => {
     if (!file.name.toLowerCase().endsWith('.pdf')) {
-      setError('File must be a PDF');
+      const errorMsg = 'File must be a PDF';
+      setError(errorMsg);
+      if (onError) onError(errorMsg);
       return;
     }
 
@@ -34,6 +49,7 @@ export default function FileUploader({ onFileSelected }: { onFileSelected: (file
       const formData = new FormData();
       formData.append('file', file);
 
+      // Step 1: Upload the file
       const response = await fetch('http://localhost:8000/upload-pdf/', {
         method: 'POST',
         body: formData,
@@ -45,12 +61,36 @@ export default function FileUploader({ onFileSelected }: { onFileSelected: (file
 
       const result: UploadResponse = await response.json();
       console.log('File uploaded successfully:', result);
-      // We don't need to set anything since we're just uploading
+      
+      // Step 2: Trigger analysis after upload is complete
+      setIsUploading(false);
+      setIsAnalyzing(true);
+      
+      const analysisResponse = await fetch('http://localhost:8000/analyze-mortgage/', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+      
+      if (!analysisResponse.ok) {
+        throw new Error(`Analysis failed with status ${analysisResponse.status}`);
+      }
+      
+      const analysisResult: MortgageAnalysis = await analysisResponse.json();
+      console.log('Mortgage analysis completed:', analysisResult);
+      
+      // Step 3: Pass the analysis results to the parent component
+      onAnalysisComplete(analysisResult);
+      
     } catch (err) {
-      setError(`Upload failed: ${err instanceof Error ? err.message : String(err)}`);
-      console.error('Upload error:', err);
+      const errorMsg = `Process failed: ${err instanceof Error ? err.message : String(err)}`;
+      setError(errorMsg);
+      if (onError) onError(errorMsg);
+      console.error('Error:', err);
     } finally {
       setIsUploading(false);
+      setIsAnalyzing(false);
     }
   };
   
@@ -82,14 +122,14 @@ export default function FileUploader({ onFileSelected }: { onFileSelected: (file
     if (e.dataTransfer.files && e.dataTransfer.files[0]) {
       const file = e.dataTransfer.files[0];
       onFileSelected(file);
-      await uploadFile(file);
+      await uploadAndAnalyzeFile(file);
     }
   };
   
   return (
     <div 
       ref={dropRef}
-      className={`file-upload-container w-full max-w-xl mx-auto bg-[#211A3F]/60 backdrop-blur-md rounded-[4vw] py-16 px-8 border border-[#E4E3ED]/40 flex flex-col items-center justify-center cursor-pointer ${isDragging ? 'drag-active' : ''} ${isUploading ? 'opacity-70' : ''}`}
+      className={`file-upload-container w-full max-w-xl mx-auto bg-[#211A3F]/60 backdrop-blur-md rounded-[4vw] py-16 px-8 border border-[#E4E3ED]/40 flex flex-col items-center justify-center cursor-pointer ${isDragging ? 'drag-active' : ''} ${isUploading || isAnalyzing ? 'opacity-70' : ''}`}
       onClick={() => document.getElementById('file-input')?.click()}
       onDragEnter={handleDragEnter}
       onDragLeave={handleDragLeave}
@@ -102,13 +142,19 @@ export default function FileUploader({ onFileSelected }: { onFileSelected: (file
           <path d="M3 15V19C3 20.1046 3.89543 21 5 21H19C20.1046 21 21 20.1046 21 19V15" stroke="#FFFFFF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
         </svg>
       </div>
-      <p className="text-[#FFFFFF] text-base mb-1">{isUploading ? 'Uploading...' : 'Drag and drop your mortgage document here, or click to select'}</p>
-      <p className="text-[#D9D9D9] text-sm">Supported format: PDF, JPG (max 10MB)</p>
+      <p className="text-[#FFFFFF] text-base mb-1">
+        {isUploading 
+          ? 'Uploading...' 
+          : isAnalyzing 
+            ? 'Analyzing your mortgage document...' 
+            : 'Drag and drop your mortgage document here, or click to select'}
+      </p>
+      <p className="text-[#D9D9D9] text-sm">Supported format: PDF (max 10MB)</p>
       {error && <p className="text-red-500 mt-2">{error}</p>}
       <input 
         id="file-input"
         type="file"
-        accept=".pdf,.jpg,.jpeg"
+        accept=".pdf"
         onChange={handleFileChange}
         className="hidden"
       />

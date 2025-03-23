@@ -25,3 +25,9 @@ dist-ssr
 
 .env
 .env.example
+
+*data/
+*parallel_json_outputs/
+*agreed_json_outputs/
+*chroma_db/
+__pycache__/
