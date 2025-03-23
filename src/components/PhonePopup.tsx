@@ -9,19 +9,54 @@ interface PhonePopupProps {
 }
 
 export default function PhonePopup({ isOpen, onClose, onCompareQuotes }: PhonePopupProps) {
+  const [callActive, setCallActive] = useState(false);
   const [transformed, setTransformed] = useState(false);
+  const [callTimer, setCallTimer] = useState(0);
+  const [timerInterval, setTimerInterval] = useState<number | null>(null);
   
   useEffect(() => {
-    if (isOpen) {
-      const timer = setTimeout(() => {
-        setTransformed(true);
-      }, 5000);
-      
-      return () => clearTimeout(timer);
-    } else {
+    if (!isOpen) {
+      // Reset states when popup closes
+      setCallActive(false);
       setTransformed(false);
+      setCallTimer(0);
+      if (timerInterval) {
+        clearInterval(timerInterval);
+        setTimerInterval(null);
+      }
     }
-  }, [isOpen]);
+  }, [isOpen, timerInterval]);
+  
+  const startCall = () => {
+    if (callActive) return;
+    
+    setCallActive(true);
+    
+    // Start timer
+    const interval = setInterval(() => {
+      setCallTimer(prev => prev + 1);
+    }, 1000);
+    
+    setTimerInterval(interval);
+  };
+  
+  const endCall = () => {
+    if (!callActive) return;
+    
+    // Stop timer
+    if (timerInterval) {
+      clearInterval(timerInterval);
+      setTimerInterval(null);
+    }
+    
+    setTransformed(true);
+  };
+  
+  const formatTime = (seconds: number) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
+  };
   
   const handleCompareQuotes = () => {
     onClose();
@@ -67,17 +102,27 @@ export default function PhonePopup({ isOpen, onClose, onCompareQuotes }: PhonePo
         {/* Phone circle with smooth blur glow */}
         <div className="relative flex items-center justify-center mb-6">
           {/* Smooth blur glow */}
-          <div className={`absolute w-[150px] h-[150px] rounded-full ${transformed ? 'bg-[#35EEDF]' : 'bg-[#E038BC]'} opacity-75 blur-2xl transition-colors duration-500`}></div>
+          <div className={`absolute w-[150px] h-[150px] rounded-full ${callActive ? 'bg-[#35EEDF]' : 'bg-[#E038BC]'} opacity-75 blur-2xl transition-colors duration-500`}></div>
           
           {/* Main circle */}
-          <div className="w-[100px] h-[100px] bg-[#E4E3ED] rounded-full flex items-center justify-center relative z-10">
+          <div 
+            className="w-[100px] h-[100px] bg-[#E4E3ED] rounded-full flex items-center justify-center relative z-10 cursor-pointer"
+            onClick={callActive ? endCall : startCall}
+          >
             <img 
-              src={transformed ? phoneMissingIcon : phoneCallIcon} 
+              src={callActive ? phoneMissingIcon : phoneCallIcon} 
               alt="Phone" 
               className="w-12 h-12"
             />
           </div>
         </div>
+        
+        {/* Timer or Compare quotes button */}
+        {callActive && !transformed && (
+          <div className="text-[#35EEDF] font-mono text-xl">
+            {formatTime(callTimer)}
+          </div>
+        )}
         
         {/* Compare quotes button (appears after transform) */}
         {transformed && (
